@@ -1,0 +1,43 @@
+const express = require("express");
+const dotenv = require("dotenv");
+const path = require("path");
+const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
+const loginRouter = require("./router/loginRouter");
+const userRouter = require("./router/userRouter");
+const inboxRouter = require("./router/inboxRouter");
+const {
+  notFoundHandler,
+  errorHandler,
+} = require("./middlewares/common/errorHandler");
+
+const app = express();
+dotenv.config();
+
+mongoose
+  .connect(process.env.MONGO_CONNECTION_STRING)
+  .then(() => console.log("Database connection successfull"))
+  .catch((err) => console.log(err));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+//set view
+app.set("view engine", "ejs");
+
+//set static folder
+app.use(express.static(path.join(__dirname, "public")));
+
+app.use(cookieParser(process.env.COOKIE_SECRET));
+
+//routing setup
+app.use("/", loginRouter);
+app.use("/users", userRouter);
+app.use("/inbox", inboxRouter);
+
+app.use(notFoundHandler);
+app.use(errorHandler);
+
+app.listen(process.env.PORT, () => {
+  console.log("app is running");
+});
