@@ -4,7 +4,7 @@ const path = require("path");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const loginRouter = require("./router/loginRouter");
-const userRouter = require("./router/userRouter");
+const usersRouter = require("./router/usersRouter");
 const inboxRouter = require("./router/inboxRouter");
 const {
   notFoundHandler,
@@ -32,9 +32,10 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 
 //routing setup
 app.use("/", loginRouter);
-app.use("/users", userRouter);
+app.use("/users", usersRouter);
 app.use("/inbox", inboxRouter);
 
+//404 not found
 app.use(notFoundHandler);
 app.use(errorHandler);
 
