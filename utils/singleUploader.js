@@ -8,7 +8,8 @@ function uploader(
   max_file_size,
   error_msg,
 ) {
-  const UPLOADS_FOLDER = `${__dirname}/../public/uploads/${subfolder_path}`;
+  // Use path.resolve to make it Windows-friendly
+  const UPLOADS_FOLDER = path.resolve(__dirname, "..", "public", "uploads", subfolder_path);
 
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -27,6 +28,7 @@ function uploader(
       cb(null, fileName + fileExt);
     },
   });
+
   const upload = multer({
     storage: storage,
     limits: {
@@ -40,6 +42,7 @@ function uploader(
       }
     },
   });
+
   return upload;
 }
 

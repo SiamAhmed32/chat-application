@@ -77,28 +77,44 @@
     });
 
     // get response
-    let result = await response.json();
+    let result;
+    const responseText = await response.text();
+    
+    try {
+      result = JSON.parse(responseText);
+    } catch (e) {
+      console.error("Server returned non-JSON response:", responseText);
+      const commonError = document.querySelector(".common-error");
+      if (commonError) {
+        commonError.textContent = "Server Error! Please check terminal.";
+        commonError.style.display = "block";
+      }
+      return;
+    }
 
     // handle error and response
-    if (result.errors) {
+    if (response.status !== 200) {
       // errors
-      Object.keys(result.errors).forEach((fieldName) => {
-        // add error class to all inputs
-        form[fieldName].classList.add("error");
+      if (result && result.errors) {
+        Object.keys(result.errors).forEach((fieldName) => {
+          // add error class to all inputs
+          if (form[fieldName]) {
+            form[fieldName].classList.add("error");
+          }
 
-        // set all error placeholders (p tag) textContent
-        const errorPlaceholder = document.querySelector(`.${fieldName}-error`);
-        errorPlaceholder.textContent = result.errors[fieldName].msg;
-
-        // make all placeholders visible
-        errorPlaceholder.style.display = "block";
-      });
+          // set all error placeholders (p tag) textContent
+          const errorPlaceholder = document.querySelector(`.${fieldName}-error`);
+          if (errorPlaceholder) {
+            errorPlaceholder.textContent = result.errors[fieldName].msg;
+            errorPlaceholder.style.display = "block";
+          }
+        });
+      }
     } else {
       // success
       successToast.showToast();
       closeModal();
-      document.querySelector("p.error").style.display = "none";
-
+      
       // reload the page after 1 second
       setTimeout(() => {
         location.reload();
