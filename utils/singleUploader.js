@@ -8,7 +8,7 @@ function uploader(
   max_file_size,
   error_msg,
 ) {
-  const UPLOADS_FOLDER = `${__dirname}/../public/uploads${subfolder_path}`;
+  const UPLOADS_FOLDER = `${__dirname}/../public/uploads/${subfolder_path}`;
 
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -20,7 +20,7 @@ function uploader(
         file.originalname
           .replace(fileExt, "")
           .toLocaleLowerCase()
-          .split()
+          .split(" ")
           .join("-") +
         "-" +
         Date.now();
